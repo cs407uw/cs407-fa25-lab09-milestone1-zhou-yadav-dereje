@@ -1,5 +1,5 @@
 package com.cs407.lab09
-
+//sanity check
 import android.content.Context
 import android.hardware.Sensor
 import android.hardware.SensorEvent
