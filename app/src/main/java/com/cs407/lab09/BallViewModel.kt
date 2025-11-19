@@ -15,6 +15,12 @@ class BallViewModel : ViewModel() {
     private var ball: Ball? = null
     private var lastTimestamp: Long = 0L
 
+    private var calibrationX = 0f
+    private var calibrationY = 0f
+    private var isCalibrated = false
+    private val calibrationSamples = mutableListOf<Pair<Float, Float>>()
+    private val calibrationSampleCount = 20
+
     // Expose the ball's position as a StateFlow
     private val _ballPosition = MutableStateFlow(Offset.Zero)
     val ballPosition: StateFlow<Offset> = _ballPosition.asStateFlow()
@@ -43,20 +49,33 @@ class BallViewModel : ViewModel() {
         val currentBall = ball ?: return
 
         if (event.sensor.type == Sensor.TYPE_GRAVITY) {
+            val rawX = event.values[0]
+            val rawY = event.values[1]
+            val rawZ = event.values[2]
+
+            if(!isCalibrated){
+                calibrationSamples.add(Pair(rawX, rawY))
+                if (calibrationSamples.size >= calibrationSampleCount) {
+                    calibrationX = calibrationSamples.map { it.first }.average().toFloat()
+                    calibrationY = calibrationSamples.map { it.second }.average().toFloat()
+                    isCalibrated = true
+                    Log.d("BallViewModel", "Calibrated: X=$calibrationX, Y=$calibrationY")
+                }
+                return
+            }
+
             if (lastTimestamp != 0L) {
-                val NS2S = 1.0f / 1_000_000_000.0f
-                val dT = (event.timestamp - lastTimestamp) * NS2S
+                val nS2S = 1.0f / 1_000_000_000.0f
+                val dT = (event.timestamp - lastTimestamp) * nS2S
 
-                val rawX = event.values[0]
-                val rawY = event.values[1]
-                val rawZ = event.values[2]
+                val correctedX = rawX - calibrationX
+                val correctedY = rawY - calibrationY
 
-                val threshold = 0.03f //reducing drift when phone is stable
+                val threshold = 0.3f
 
-//                val xAcc = -rawX
-//                val yAcc = rawY
-                val xAcc = if (kotlin.math.abs(rawX) < threshold) 0f else -rawX
-                val yAcc = if (kotlin.math.abs(rawY) < threshold) 0f else rawY
+              val xAcc = if (kotlin.math.abs(correctedX) < threshold) 0f else -correctedX
+              val yAcc = if (kotlin.math.abs(correctedY) < threshold) 0f else correctedY
+
 
                 currentBall.updatePositionAndVelocity(
                     xAcc = xAcc,
@@ -87,5 +106,10 @@ class BallViewModel : ViewModel() {
         }
 
         lastTimestamp = 0L
+
+        isCalibrated = false
+        calibrationSamples.clear()
+        calibrationX = 0f
+        calibrationY = 0f
     }
 }

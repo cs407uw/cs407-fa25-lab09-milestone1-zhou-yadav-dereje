@@ -30,6 +30,23 @@ class Ball(
      * Updates the ball's position and velocity based on the given acceleration and time step.
      * (See lab handout for physics equations)
      */
+//    fun updatePositionAndVelocity(xAcc: Float, yAcc: Float, dT: Float) {
+//        if(isFirstUpdate) {
+//            isFirstUpdate = false
+//            accX = xAcc
+//            accY = yAcc
+//            return
+//        }
+//
+//        accX = xAcc
+//        accY = yAcc
+//        velocityX += accX * dT
+//        velocityY += accY * dT
+//        posX += velocityX * dT
+//        posY += velocityY * dT
+//        checkBoundaries() //prevents ball from leaving the screen
+//
+//    }
     fun updatePositionAndVelocity(xAcc: Float, yAcc: Float, dT: Float) {
         if(isFirstUpdate) {
             isFirstUpdate = false
@@ -38,14 +55,23 @@ class Ball(
             return
         }
 
+        // Store previous acceleration
+        val prevAccX = accX
+        val prevAccY = accY
+
+        // Update current acceleration
         accX = xAcc
         accY = yAcc
-        velocityX += accX * dT
-        velocityY += accY * dT
-        posX += velocityX * dT
-        posY += velocityY * dT
-        checkBoundaries() //prevents ball from leaving the screen
 
+        // Update velocity using Equation 1: v1 = v0 + 0.5 * (a1 + a0) * dt
+        velocityX += 0.5f * (accX + prevAccX) * dT
+        velocityY += 0.5f * (accY + prevAccY) * dT
+
+        // Update position using Equation 2: l = v0 * dt + (1/6) * dt^2 * (3*a0 + a1)
+        posX += velocityX * dT + (1f/6f) * dT * dT * (3f * prevAccX + accX)
+        posY += velocityY * dT + (1f/6f) * dT * dT * (3f * prevAccY + accY)
+
+        checkBoundaries()
     }
 
     /**
