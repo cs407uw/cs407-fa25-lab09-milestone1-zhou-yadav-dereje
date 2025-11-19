@@ -23,7 +23,7 @@ class Ball(
     private var isFirstUpdate = true
 
     init {
-        // TODO: Call reset()
+        reset() //always start centered
     }
 
     /**
@@ -38,6 +38,14 @@ class Ball(
             return
         }
 
+        accX = xAcc
+        accY = yAcc
+        velocityX += accX * dT
+        velocityY += accY * dT
+        posX += velocityX * dT
+        posY += velocityY * dT
+        checkBoundaries() //prevents ball from leaving the screen
+
     }
 
     /**
@@ -46,8 +54,37 @@ class Ball(
      * boundary should be set to 0.
      */
     fun checkBoundaries() {
-        // TODO: implement the checkBoundaries function
-        // (Check all 4 walls: left, right, top, bottom)
+        //left wall
+        if (posX < 0f) {
+            posX = 0f //return to left
+            velocityX = 0f
+            accX = 0f
+        }
+
+        //right wall
+        val rightLimit = backgroundWidth - ballSize
+        if (posX > rightLimit) {
+            posX = rightLimit //return to right
+            velocityX = 0f
+            accX = 0f
+        }
+
+        //top wall
+        if (posY < 0f) {
+            posY = 0f  //return to top
+            velocityY = 0f
+            accY = 0f
+        }
+
+        //bottom
+        val bottomLimit = backgroundHeight - ballSize
+        if (posY > bottomLimit) {
+            posY = bottomLimit  //return to bottom
+            velocityY = 0f
+            accY = 0f
+        }
+
+
     }
 
     /**
@@ -55,7 +92,16 @@ class Ball(
      * velocity and acceleration.
      */
     fun reset() {
-        // TODO: implement the reset function
-        // (Reset posX, posY, velocityX, velocityY, accX, accY, isFirstUpdate)
+        //center ball
+        posX = (backgroundWidth - ballSize) / 2f
+        posY = (backgroundHeight - ballSize) / 2f
+
+        velocityX = 0f
+        velocityY = 0f
+        accX = 0f
+        accY = 0f
+
+        isFirstUpdate = true //next update should reinitialize acceleration
+
     }
 }

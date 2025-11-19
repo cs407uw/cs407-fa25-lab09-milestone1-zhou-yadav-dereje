@@ -2,6 +2,7 @@ package com.cs407.lab09
 
 import android.hardware.Sensor
 import android.hardware.SensorEvent
+import android.util.Log
 import androidx.compose.ui.geometry.Offset
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,11 +24,14 @@ class BallViewModel : ViewModel() {
      */
     fun initBall(fieldWidth: Float, fieldHeight: Float, ballSizePx: Float) {
         if (ball == null) {
-            // TODO: Initialize the ball instance
-            // ball = Ball(...)
+            ball = Ball(backgroundWidth = fieldWidth,
+                backgroundHeight = fieldHeight,
+                ballSize = ballSizePx)
 
-            // TODO: Update the StateFlow with the initial position
-            // _ballPosition.value = Offset(ball!!.posX, ball!!.posY)
+            _ballPosition.value = Offset(
+                x = ball!!.posX,
+                y = ball!!.posY
+            )
         }
     }
 
@@ -40,32 +44,48 @@ class BallViewModel : ViewModel() {
 
         if (event.sensor.type == Sensor.TYPE_GRAVITY) {
             if (lastTimestamp != 0L) {
-                // TODO: Calculate the time difference (dT) in seconds
-                // Hint: event.timestamp is in nanoseconds
-                // val NS2S = 1.0f / 1000000000.0f
-                // val dT = ...
+                val NS2S = 1.0f / 1_000_000_000.0f
+                val dT = (event.timestamp - lastTimestamp) * NS2S
 
-                // TODO: Update the ball's position and velocity
-                // Hint: The sensor's x and y-axis are inverted
-                // currentBall.updatePositionAndVelocity(xAcc = ..., yAcc = ..., dT = ...)
+                val rawX = event.values[0]
+                val rawY = event.values[1]
+                val rawZ = event.values[2]
 
-                // TODO: Update the StateFlow to notify the UI
-                // _ballPosition.update { Offset(currentBall.posX, currentBall.posY) }
+                val threshold = 0.03f //reducing drift when phone is stable
+
+//                val xAcc = -rawX
+//                val yAcc = rawY
+                val xAcc = if (kotlin.math.abs(rawX) < threshold) 0f else -rawX
+                val yAcc = if (kotlin.math.abs(rawY) < threshold) 0f else rawY
+
+                currentBall.updatePositionAndVelocity(
+                    xAcc = xAcc,
+                    yAcc = yAcc,
+                    dT = dT
+                )
+
+                _ballPosition.update {
+                    Offset(
+                        currentBall.posX,
+                        currentBall.posY
+                    )
+                }
             }
 
-            // TODO: Update the lastTimestamp
-            // lastTimestamp = ...
+            lastTimestamp = event.timestamp
         }
     }
 
     fun reset() {
-        // TODO: Reset the ball's state
-        // ball?.reset()
+        ball?.reset()
 
-        // TODO: Update the StateFlow with the reset position
-        // ball?.let { ... }
+        ball?.let { centeredBall ->
+            _ballPosition.value = Offset(
+                centeredBall.posX,
+                centeredBall.posY
+            )
+        }
 
-        // TODO: Reset the lastTimestamp
-        // lastTimestamp = 0L
+        lastTimestamp = 0L
     }
 }
