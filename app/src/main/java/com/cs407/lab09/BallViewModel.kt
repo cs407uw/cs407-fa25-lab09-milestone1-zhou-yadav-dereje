@@ -85,10 +85,5 @@ class BallViewModel : ViewModel() {
         }
 
         lastTimestamp = 0L
-
-        isCalibrated = false
-        calibrationSamples.clear()
-        calibrationX = 0f
-        calibrationY = 0f
     }
 }
