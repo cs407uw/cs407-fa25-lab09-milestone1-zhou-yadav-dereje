@@ -21,13 +21,9 @@ class BallViewModel : ViewModel() {
     private val calibrationSamples = mutableListOf<Pair<Float, Float>>()
     private val calibrationSampleCount = 20
 
-    // Expose the ball's position as a StateFlow
     private val _ballPosition = MutableStateFlow(Offset.Zero)
     val ballPosition: StateFlow<Offset> = _ballPosition.asStateFlow()
 
-    /**
-     * Called by the UI when the game field's size is known.
-     */
     fun initBall(fieldWidth: Float, fieldHeight: Float, ballSizePx: Float) {
         if (ball == null) {
             ball = Ball(backgroundWidth = fieldWidth,
@@ -41,11 +37,7 @@ class BallViewModel : ViewModel() {
         }
     }
 
-    /**
-     * Called by the SensorEventListener in the UI.
-     */
     fun onSensorDataChanged(event: SensorEvent) {
-        // Ensure ball is initialized
         val currentBall = ball ?: return
 
         if (event.sensor.type == Sensor.TYPE_GRAVITY) {
@@ -75,7 +67,6 @@ class BallViewModel : ViewModel() {
 
                 val xAcc = if (kotlin.math.abs(correctedX) < threshold) 0f else -correctedX
                 val yAcc = if (kotlin.math.abs(correctedY) < threshold) 0f else correctedY
-
 
                 currentBall.updatePositionAndVelocity(
                     xAcc = xAcc,
