@@ -26,14 +26,14 @@ class BallViewModel : ViewModel() {
 
     fun initBall(fieldWidth: Float, fieldHeight: Float, ballSizePx: Float) {
         if (ball == null) {
-            ball = Ball(backgroundWidth = fieldWidth,
-                backgroundHeight = fieldHeight,
-                ballSize = ballSizePx)
+            ball =
+                    Ball(
+                            backgroundWidth = fieldWidth,
+                            backgroundHeight = fieldHeight,
+                            ballSize = ballSizePx
+                    )
 
-            _ballPosition.value = Offset(
-                x = ball!!.posX,
-                y = ball!!.posY
-            )
+            _ballPosition.value = Offset(x = ball!!.posX, y = ball!!.posY)
         }
     }
 
@@ -45,7 +45,7 @@ class BallViewModel : ViewModel() {
             val rawY = event.values[1]
             val rawZ = event.values[2]
 
-            if(!isCalibrated){
+            if (!isCalibrated) {
                 calibrationSamples.add(Pair(rawX, rawY))
                 if (calibrationSamples.size >= calibrationSampleCount) {
                     calibrationX = calibrationSamples.map { it.first }.average().toFloat()
@@ -68,18 +68,9 @@ class BallViewModel : ViewModel() {
                 val xAcc = if (kotlin.math.abs(correctedX) < threshold) 0f else -correctedX
                 val yAcc = if (kotlin.math.abs(correctedY) < threshold) 0f else correctedY
 
-                currentBall.updatePositionAndVelocity(
-                    xAcc = xAcc,
-                    yAcc = yAcc,
-                    dT = dT
-                )
+                currentBall.updatePositionAndVelocity(xAcc = xAcc, yAcc = yAcc, dT = dT)
 
-                _ballPosition.update {
-                    Offset(
-                        currentBall.posX,
-                        currentBall.posY
-                    )
-                }
+                _ballPosition.update { Offset(currentBall.posX, currentBall.posY) }
             }
 
             lastTimestamp = event.timestamp
@@ -90,10 +81,7 @@ class BallViewModel : ViewModel() {
         ball?.reset()
 
         ball?.let { centeredBall ->
-            _ballPosition.value = Offset(
-                centeredBall.posX,
-                centeredBall.posY
-            )
+            _ballPosition.value = Offset(centeredBall.posX, centeredBall.posY)
         }
 
         lastTimestamp = 0L

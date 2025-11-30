@@ -27,7 +27,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
@@ -36,7 +35,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.cs407.lab09.R
 import com.cs407.lab09.ui.theme.Lab09Theme
 import kotlin.math.roundToInt
 
@@ -49,11 +47,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             Lab09Theme {
                 Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    GameScreen(viewModel = viewModel)
-                }
+                        modifier = Modifier.fillMaxSize(),
+                        color = MaterialTheme.colorScheme.background
+                ) { GameScreen(viewModel = viewModel) }
             }
         }
     }
@@ -63,31 +59,23 @@ class MainActivity : ComponentActivity() {
 fun GameScreen(viewModel: BallViewModel) {
     val context = LocalContext.current
 
-
     val sensorManager = remember {
         context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
     }
 
-    val gravitySensor = remember {
-        sensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY)
-    }
+    val gravitySensor = remember { sensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY) }
 
     DisposableEffect(sensorManager, gravitySensor) {
-        val listener = object : SensorEventListener {
-            override fun onSensorChanged(event: SensorEvent?) {
-                event?.let {
-                    viewModel.onSensorDataChanged(it)
+        val listener =
+                object : SensorEventListener {
+                    override fun onSensorChanged(event: SensorEvent?) {
+                        event?.let { viewModel.onSensorDataChanged(it) }
+                    }
+                    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
                 }
-            }
-            override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
-        }
 
         if (gravitySensor != null) {
-            sensorManager.registerListener(
-                listener,
-                gravitySensor,
-                SensorManager.SENSOR_DELAY_GAME
-            )
+            sensorManager.registerListener(listener, gravitySensor, SensorManager.SENSOR_DELAY_GAME)
         }
 
         onDispose {
@@ -99,47 +87,40 @@ fun GameScreen(viewModel: BallViewModel) {
 
     Column(modifier = Modifier.fillMaxSize()) {
         Button(
-            onClick = {
-                viewModel.reset()
-            },
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(16.dp)
-        ) {
-            Text(text = "Reset")
-        }
+                onClick = { viewModel.reset() },
+                modifier = Modifier.align(Alignment.CenterHorizontally).padding(16.dp)
+        ) { Text(text = "Reset") }
 
         val ballSize = 50.dp
         val ballSizePx = with(LocalDensity.current) { ballSize.toPx() }
         val ballPosition by viewModel.ballPosition.collectAsStateWithLifecycle()
 
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .weight(1f)
-                .paint(
-                    painter = painterResource(id = R.drawable.field),
-                    contentScale = ContentScale.FillBounds
-                )
-                .onSizeChanged { size ->
-                    viewModel.initBall(
-                        fieldWidth = size.width.toFloat(),
-                        fieldHeight = size.height.toFloat(),
-                        ballSizePx = ballSizePx
-                    )
-                }
+                modifier =
+                        Modifier.fillMaxSize()
+                                .weight(1f)
+                                .paint(
+                                        painter = painterResource(id = R.drawable.field),
+                                        contentScale = ContentScale.FillBounds
+                                )
+                                .onSizeChanged { size ->
+                                    viewModel.initBall(
+                                            fieldWidth = size.width.toFloat(),
+                                            fieldHeight = size.height.toFloat(),
+                                            ballSizePx = ballSizePx
+                                    )
+                                }
         ) {
             Image(
-                painter = painterResource(id = R.drawable.soccer),
-                contentDescription = "Soccer Ball",
-                modifier = Modifier
-                    .size(ballSize)
-                    .offset {
-                        IntOffset(
-                            x = ballPosition.x.roundToInt(),
-                            y = ballPosition.y.roundToInt()
-                        )
-                    }
+                    painter = painterResource(id = R.drawable.soccer),
+                    contentDescription = "Soccer Ball",
+                    modifier =
+                            Modifier.size(ballSize).offset {
+                                IntOffset(
+                                        x = ballPosition.x.roundToInt(),
+                                        y = ballPosition.y.roundToInt()
+                                )
+                            }
             )
         }
     }

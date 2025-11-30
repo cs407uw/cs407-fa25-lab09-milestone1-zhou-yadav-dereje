@@ -9,9 +9,9 @@ package com.cs407.lab09
  * - ballSize: the width/height of the ball, of type Float
  */
 class Ball(
-    private val backgroundWidth: Float,
-    private val backgroundHeight: Float,
-    private val ballSize: Float
+        private val backgroundWidth: Float,
+        private val backgroundHeight: Float,
+        private val ballSize: Float
 ) {
     var posX = 0f
     var posY = 0f
@@ -27,28 +27,28 @@ class Ball(
     }
 
     /**
-     * Updates the ball's position and velocity based on the given acceleration and time step.
-     * (See lab handout for physics equations)
+     * Updates the ball's position and velocity based on the given acceleration and time step. (See
+     * lab handout for physics equations)
      */
-//    fun updatePositionAndVelocity(xAcc: Float, yAcc: Float, dT: Float) {
-//        if(isFirstUpdate) {
-//            isFirstUpdate = false
-//            accX = xAcc
-//            accY = yAcc
-//            return
-//        }
-//
-//        accX = xAcc
-//        accY = yAcc
-//        velocityX += accX * dT
-//        velocityY += accY * dT
-//        posX += velocityX * dT
-//        posY += velocityY * dT
-//        checkBoundaries() //prevents ball from leaving the screen
-//
-//    }
+    //    fun updatePositionAndVelocity(xAcc: Float, yAcc: Float, dT: Float) {
+    //        if(isFirstUpdate) {
+    //            isFirstUpdate = false
+    //            accX = xAcc
+    //            accY = yAcc
+    //            return
+    //        }
+    //
+    //        accX = xAcc
+    //        accY = yAcc
+    //        velocityX += accX * dT
+    //        velocityY += accY * dT
+    //        posX += velocityX * dT
+    //        posY += velocityY * dT
+    //        checkBoundaries() //prevents ball from leaving the screen
+    //
+    //    }
     fun updatePositionAndVelocity(xAcc: Float, yAcc: Float, dT: Float) {
-        if(isFirstUpdate) {
+        if (isFirstUpdate) {
             isFirstUpdate = false
             accX = xAcc
             accY = yAcc
@@ -64,16 +64,15 @@ class Ball(
         velocityX += 0.5f * (accX + prevAccX) * dT
         velocityY += 0.5f * (accY + prevAccY) * dT
 
-        posX += velocityX * dT + (1f/6f) * dT * dT * (3f * prevAccX + accX)
-        posY += velocityY * dT + (1f/6f) * dT * dT * (3f * prevAccY + accY)
+        posX += velocityX * dT + (1f / 6f) * dT * dT * (3f * prevAccX + accX)
+        posY += velocityY * dT + (1f / 6f) * dT * dT * (3f * prevAccY + accY)
 
         checkBoundaries()
     }
 
     /**
-     * Ensures the ball does not move outside the boundaries.
-     * When it collides, velocity and acceleration perpendicular to the
-     * boundary should be set to 0.
+     * Ensures the ball does not move outside the boundaries. When it collides, velocity and
+     * acceleration perpendicular to the boundary should be set to 0.
      */
     fun checkBoundaries() {
         if (posX < 0f) {
@@ -103,10 +102,7 @@ class Ball(
         }
     }
 
-    /**
-     * Resets the ball to the center of the screen with zero
-     * velocity and acceleration.
-     */
+    /** Resets the ball to the center of the screen with zero velocity and acceleration. */
     fun reset() {
         posX = (backgroundWidth - ballSize) / 2f
         posY = (backgroundHeight - ballSize) / 2f
