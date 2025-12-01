@@ -46,14 +46,10 @@ class BallViewModel : ViewModel() {
             val rawZ = event.values[2]
 
             if (!isCalibrated) {
-                calibrationSamples.add(Pair(rawX, rawY))
-                if (calibrationSamples.size >= calibrationSampleCount) {
-                    calibrationX = calibrationSamples.map { it.first }.average().toFloat()
-                    calibrationY = calibrationSamples.map { it.second }.average().toFloat()
-                    isCalibrated = true
-                    Log.d("BallViewModel", "Calibrated: X=$calibrationX, Y=$calibrationY")
-                }
-                return
+                calibrationX = 0f
+                calibrationY = 0f
+                isCalibrated = true
+                Log.d("BallViewModel", "Calibrated: X=$calibrationX, Y=$calibrationY")
             }
 
             if (lastTimestamp != 0L) {
@@ -64,7 +60,7 @@ class BallViewModel : ViewModel() {
                 val correctedY = rawY - calibrationY
 
                 val threshold = 0.5f
-                val sensitivityMultiplier = 15f
+                val sensitivityMultiplier = 50f
 
                 val xAcc =
                         if (kotlin.math.abs(correctedX) < threshold) 0f

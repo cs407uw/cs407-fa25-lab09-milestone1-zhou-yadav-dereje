@@ -64,9 +64,16 @@ class Ball(
         velocityX += 0.5f * (accX + prevAccX) * dT
         velocityY += 0.5f * (accY + prevAccY) * dT
 
-        val friction = 0.98f
+        val friction = 0.94f
         velocityX *= friction
         velocityY *= friction
+
+        if (xAcc == 0f && kotlin.math.abs(velocityX) < 50f) {
+            velocityX = 0f
+        }
+        if (yAcc == 0f && kotlin.math.abs(velocityY) < 50f) {
+            velocityY = 0f
+        }
 
         posX += velocityX * dT + (1f / 6f) * dT * dT * (3f * prevAccX + accX)
         posY += velocityY * dT + (1f / 6f) * dT * dT * (3f * prevAccY + accY)
