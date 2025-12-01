@@ -63,10 +63,11 @@ class BallViewModel : ViewModel() {
                 val correctedX = rawX - calibrationX
                 val correctedY = rawY - calibrationY
 
-                val threshold = 0.3f
+                val threshold = 0.5f
+                val sensitivityMultiplier = 15f
 
-                val xAcc = if (kotlin.math.abs(correctedX) < threshold) 0f else -correctedX
-                val yAcc = if (kotlin.math.abs(correctedY) < threshold) 0f else correctedY
+                val xAcc = if (kotlin.math.abs(correctedX) < threshold) 0f else -correctedX * sensitivityMultiplier
+                val yAcc = if (kotlin.math.abs(correctedY) < threshold) 0f else correctedY * sensitivityMultiplier
 
                 currentBall.updatePositionAndVelocity(xAcc = xAcc, yAcc = yAcc, dT = dT)
 

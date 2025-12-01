@@ -64,6 +64,10 @@ class Ball(
         velocityX += 0.5f * (accX + prevAccX) * dT
         velocityY += 0.5f * (accY + prevAccY) * dT
 
+        val friction = 0.98f
+        velocityX *= friction
+        velocityY *= friction
+
         posX += velocityX * dT + (1f / 6f) * dT * dT * (3f * prevAccX + accX)
         posY += velocityY * dT + (1f / 6f) * dT * dT * (3f * prevAccY + accY)
 
