@@ -75,7 +75,11 @@ fun GameScreen(viewModel: BallViewModel) {
                 }
 
         if (gravitySensor != null) {
-            sensorManager.registerListener(listener, gravitySensor, SensorManager.SENSOR_DELAY_FASTEST)
+            sensorManager.registerListener(
+                    listener,
+                    gravitySensor,
+                    SensorManager.SENSOR_DELAY_FASTEST
+            )
         }
 
         onDispose {
